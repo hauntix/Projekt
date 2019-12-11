@@ -5,12 +5,15 @@ import org.hibernate.type.descriptor.sql.VarcharTypeDescriptor;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name = "users")
 public class User {
+
     @Id
     @Column(name = "userID")
-    private String userID;
+    private Long userID;
     private String firstName;
     private String lastName;
     private String email;
@@ -18,17 +21,18 @@ public class User {
     public User(){
 
     }
-    public User(String userID, String firstName, String lastName, String email) {
+    public User(Long userID, String firstName, String lastName, String email) {
         this.userID = userID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
     }
-    public String getUserID() {
+
+    public Long getUserID() {
         return userID;
     }
 
-    public void setUserID(String userID) {
+    public void setUserID(Long userID) {
         this.userID = userID;
     }
 

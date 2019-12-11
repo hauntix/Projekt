@@ -7,13 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import javax.validation.Valid;
 import java.net.URI;
+import java.util.List;
 
 @RestController
 public class UsersController {
@@ -21,7 +20,21 @@ public class UsersController {
     @Autowired
     private UsersService usersService;
 
-    @PostMapping(value = "/user")
+    @GetMapping(value = "/users")
+    public ResponseEntity<?> getAllUsers(User user) {
+        List<User> allUsers = (List<User>) usersService.getAllUsers(user);
+        Response rep = new Response();
+        if(!allUsers.isEmpty()) {
+            rep.setCode(HttpStatus.OK.value());
+            rep.setData(allUsers);
+            return new ResponseEntity<>(rep, HttpStatus.OK);
+        }else{
+            rep.setCode(HttpStatus.NOT_FOUND.value());
+            return new ResponseEntity<>(rep, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PostMapping(value = "/users")
     public ResponseEntity<?> addUser(@RequestBody User user, @PathVariable Long userId) {
         Response rep = new Response();
         User user1 = usersService.createUser(userId, user);
@@ -46,5 +59,12 @@ public class UsersController {
             rep.setMessage("User could not be created. Try again later :(");
             return new ResponseEntity<>(rep, HttpStatus.NOT_FOUND);
         }
+    }
+
+    @PutMapping(value = "/users/{id}")
+    public ResponseEntity<?> updateUser(@Valid @RequestBody User user, @PathVariable("id") Long userId) {
+        Response rep = new Response();
+        usersService.updateUser(user, userId);
+        return new ResponseEntity<>(HttpStatus.CREATED, HttpStatus.OK);
     }
 }
