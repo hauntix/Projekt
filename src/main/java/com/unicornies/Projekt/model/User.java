@@ -2,10 +2,7 @@ package com.unicornies.Projekt.model;
 
 import org.hibernate.type.descriptor.sql.VarcharTypeDescriptor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.util.Set;
 
 @Entity
@@ -18,7 +15,9 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    private Set address;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "userID")
+    private Set<Address> address;
 
     public User(){
 
