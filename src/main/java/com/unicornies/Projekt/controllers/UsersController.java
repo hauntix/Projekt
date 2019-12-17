@@ -2,6 +2,7 @@ package com.unicornies.Projekt.controllers;
 
 import com.unicornies.Projekt.checker.Response;
 import com.unicornies.Projekt.model.User;
+import com.unicornies.Projekt.model.responses.EnhancedResponse;
 import com.unicornies.Projekt.services.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 public class UsersController {
@@ -32,6 +34,15 @@ public class UsersController {
             rep.setCode(HttpStatus.NOT_FOUND.value());
             return new ResponseEntity<>(rep, HttpStatus.NOT_FOUND);
         }
+    }
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<?> getCustomerById(@PathVariable Long userId){
+        usersService.verifyUserId(userId, "error fetching customer");
+
+        Optional<User> customer = usersService.getUserById(userId);
+        return new ResponseEntity<>(
+                EnhancedResponse.create(customer, "Success", HttpStatus.OK.value()),
+                HttpStatus.OK);
     }
 
     @PostMapping(value = "/users")
@@ -66,5 +77,12 @@ public class UsersController {
         Response rep = new Response();
         usersService.updateUser(user, userId);
         return new ResponseEntity<>(HttpStatus.CREATED, HttpStatus.OK);
+    }
+
+    @DeleteMapping("users/{userId}")
+    public ResponseEntity<?> deleteUser(@PathVariable Long userId) {
+        usersService.verifyUserId(userId, "this id does not exist for Customers");
+        usersService.deleteUser(userId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
