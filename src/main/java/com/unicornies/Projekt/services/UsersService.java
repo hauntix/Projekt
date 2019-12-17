@@ -2,15 +2,13 @@ package com.unicornies.Projekt.services;
 
 import com.unicornies.Projekt.exceptions.ResourceNotFoundException;
 import com.unicornies.Projekt.model.User;
-import com.unicornies.Projekt.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.ResourceAccessException;
+import com.unicornies.Projekt.repository.*;
 
-import javax.annotation.Resource;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
 
 @Service
 public class UsersService {
@@ -18,31 +16,40 @@ public class UsersService {
     @Autowired
     private UsersRepository usersRepository;
 
-    public List<User> getAllUsers() {
-        return (List<User>) usersRepository.findAll();
+
+
+    public List<User> getAllUsers(User user) {
+        List<User> listOfUsers = new ArrayList<>();
+        usersRepository.findAll().forEach(listOfUsers::add);
+        return listOfUsers;
     }
 
-    public Optional<User> getUserByID(String userID) {
-        return usersRepository.findById(userID);
+    public Optional<User> getUserById(Long userId){
+        return usersRepository.findById(userId);
+
     }
 
-    public User createUser(User user) {
+    public User createUser(Long userId, User user) {
+        usersRepository.save(user);
+        return user;
+    }
+
+    public User updateUser(User user, Long userId){
+        verifyUserId(userId, "");
+
+        user.setUserID(userId);
+
         return usersRepository.save(user);
     }
 
-    public User updateUser(User user, String userID) {
-        verifyUserID(userID, "");
-        user.setUserID(userID);
-        return usersRepository.save(user);
+    public void deleteUser(Long userId){
+        usersRepository.deleteById(userId);
     }
 
-    public void deleteUserId(String userID) {
-        usersRepository.deleteById(userID);
-    }
+    public void verifyUserId(Long userId, String message) throws ResourceNotFoundException {
+        Optional<User> user = usersRepository.findById(userId);
 
-    public void verifyUserID(String userID, String message) throws ResourceNotFoundException {
-        Optional<User> user = usersRepository.findById(userID);
-        if (!user.isPresent())
+        if(!user.isPresent())
             throw new ResourceNotFoundException(message);
     }
 }

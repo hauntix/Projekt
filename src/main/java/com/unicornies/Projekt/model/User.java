@@ -2,37 +2,47 @@ package com.unicornies.Projekt.model;
 
 import org.hibernate.type.descriptor.sql.VarcharTypeDescriptor;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.util.Set;
 
 @Entity
+@Table(name = "users")
 public class User {
+
     @Id
     @Column(name = "userID")
-    private String userID;
-
-
+    private Long userID;
     private String firstName;
-
     private String lastName;
-
     private String email;
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "userID")
+    private Set<Address> address;
 
     public User(){
 
     }
-    public User(String userID, String firstName, String lastName, String email) {
+    public User(Long userID, String firstName, String lastName, String email, Set address) {
         this.userID = userID;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.address = address;
     }
-    public String getUserID() {
+
+    public Set getAddress() {
+        return address;
+    }
+
+    public void setAddress(Set address) {
+        this.address = address;
+    }
+
+    public Long getUserID() {
         return userID;
     }
 
-    public void setUserID(String userID) {
+    public void setUserID(Long userID) {
         this.userID = userID;
     }
 
@@ -67,6 +77,7 @@ public class User {
                 ", firstName='" + firstName + '\'' +
                 ", lastName='" + lastName + '\'' +
                 ", email='" + email + '\'' +
+                ", address=" + address +
                 '}';
     }
 }
